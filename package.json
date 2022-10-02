@@ -1,6 +1,26 @@
 {
+  "name": "cauldron_overflow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
   "dependencies": {
     "bootstrap": "^5.2.1",
     "jquery": "^3.6.1"
-  }
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.1.0",
+    "@symfony/stimulus-bridge": "^3.2.1",
+    "@symfony/webpack-encore": "^4.0.0",
+    "core-js": "^3.25.3",
+    "regenerator-runtime": "^0.13.9",
+    "webpack-notifier": "^1.15.0"
+  },
+  "scripts": {
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress"
+  },
+  "author": "",
+  "license": "ISC"
 }
