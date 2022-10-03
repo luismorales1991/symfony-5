@@ -8,6 +8,8 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "knplabs/knp-markdown-bundle": "^1.10",
+        "paragonie/sodium_compat": "^1.19",
+        "sentry/sentry-symfony": "^4.3",
         "symfony/asset": "6.1.*",
         "symfony/console": "6.1.*",
         "symfony/dotenv": "6.1.*",
@@ -69,12 +71,13 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": true,
             "require": "6.1.*"
         }
     },
     "require-dev": {
         "symfony/debug-bundle": "6.1.*",
+        "symfony/maker-bundle": "^1.46",
         "symfony/stopwatch": "6.1.*",
         "symfony/web-profiler-bundle": "6.1.*"
     }
