@@ -3,10 +3,8 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Service\MarkdownHelper;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
-use Twig\Environment;
 use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Question;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,16 +22,13 @@ class QuestionController extends AbstractController
     }
 
     #[Route("/", name:"app_homepage")]
-    public function homepage(Environment $twigEnvironment)
+    public function homepage(QuestionRepository $repository)
     {
-        /*
-        // fun example of using the Twig service directly!
-        $html = $twigEnvironment->render('question/homepage.html.twig');
+        $questions = $repository->findAllAskedOrderedByNewest();
 
-        return new Response($html);
-        */
-
-        return $this->render('question/homepage.html.twig');
+        return $this->render('question/homepage.html.twig', [
+            'questions' => $questions,
+        ]);
     }
 
     
@@ -66,17 +61,10 @@ EOF
     }
 
     #[Route("/questions/{slug}", name:"app_question_show")]
-    public function show($slug, MarkdownHelper $markdownHelper, QuestionRepository $repository)
+    public function show(Question $question)
     {
         if ($this->isDebug) {
             $this->logger->info('We are in debug mode!');
-        }
-
-        /** @var Question|null $question */
-        $question = $repository->findOneBy(['slug' => $slug]);
-    
-        if (!$question) {
-            throw $this->createNotFoundException(sprintf('no question found for slug "%s"', $slug));
         }
         $answers = [
             'Make sure your cat is sitting `purrrfectly` still ?',
