@@ -3,13 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\QuestionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\Request;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
 class Question
 {
+    use TimestampableEntity;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,16 +23,25 @@ class Question
     private ?string $name = null;
 
     #[ORM\Column(length: 100, unique: true)]
+    #[Gedmo\Slug(fields: ['name'])]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $question = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $askedAt = null;
+    private ?\DateTime $askedAt = null;
 
     #[ORM\Column]
     private int $votes = 0;
+
+    #[ORM\OneToMany(mappedBy: 'question', targetEntity: Answer::class)]
+    private Collection $answers;
+
+    public function __construct()
+    {
+        $this->answers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -71,12 +84,12 @@ class Question
         return $this;
     }
 
-    public function getAskedAt(): ?\DateTimeImmutable
+    public function getAskedAt(): ?\DateTime
     {
         return $this->askedAt;
     }
 
-    public function setAskedAt(?\DateTimeImmutable $askedAt): self
+    public function setAskedAt(?\DateTime $askedAt): self
     {
         $this->askedAt = $askedAt;
 
@@ -111,5 +124,35 @@ class Question
     {
         $prefix = $this->getVotes() >=0 ? '+' : '-';
         return sprintf('%s %d', $prefix, abs($this->getVotes()));
+    }
+
+    /**
+     * @return Collection<int, Answer>
+     */
+    public function getAnswers(): Collection
+    {
+        return $this->answers;
+    }
+
+    public function addAnswer(Answer $answer): self
+    {
+        if (!$this->answers->contains($answer)) {
+            $this->answers->add($answer);
+            $answer->setQuestion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnswer(Answer $answer): self
+    {
+        if ($this->answers->removeElement($answer)) {
+            // set the owning side to null (unless already changed)
+            if ($answer->getQuestion() === $this) {
+                $answer->setQuestion(null);
+            }
+        }
+
+        return $this;
     }
 }

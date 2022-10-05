@@ -10,6 +10,7 @@ use App\Entity\Question;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\QuestionRepository;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\AnswerRepository;
 
 class QuestionController extends AbstractController
 {
@@ -40,16 +41,14 @@ class QuestionController extends AbstractController
     }
 
     #[Route("/questions/{slug}", name:"app_question_show")]
-    public function show(Question $question)
+    public function show(Question $question, AnswerRepository $answerRepository)
     {
         if ($this->isDebug) {
             $this->logger->info('We are in debug mode!');
         }
-        $answers = [
-            'Make sure your cat is sitting `purrrfectly` still ?',
-            'Honestly, I like furry shoes better than MY cat',
-            'Maybe... try saying the spell backwards?',
-        ];
+
+        $answers = $question->getAnswers();
+
         return $this->render('question/show.html.twig', [
             'question' => $question,
             'answers' => $answers,

@@ -7,6 +7,7 @@ use App\Repository\QuestionRepository;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 /**
  * @extends ModelFactory<Question>
@@ -36,22 +37,20 @@ final class QuestionFactory extends ModelFactory
         // TODO inject services if required (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services)
     }
 
+    public function unpublished(): self
+    {
+        return $this->addState(['askedAt' => null]);
+    }
+
     protected function getDefaults(): array
     {
         return [
-            'name' => 'Missing pants',
-            'slug' => 'missing-pants-'.rand(0, 1000),
-            'question' => <<<EOF
-Hi! So... I'm having a *weird* day. Yesterday, I cast a spell
-to make my dishes wash themselves. But while I was casting it,
-I slipped a little and I think `I also hit my pants with the spell`.
-When I woke up this morning, I caught a quick glimpse of my pants
-opening the front door and walking out! I've been out all afternoon
-(with no pants mind you) searching for them.
-Does anyone have a spell to call your pants back?
-EOF
-            ,
-            'askedAt' => rand(1, 10) > 2 ? new \DateTimeImmutable(sprintf('-%d days', rand(1, 100))) : null,
+            'name' => self::faker()->realText(50),
+            'question' => self::faker()->paragraphs(
+                self::faker()->numberBetween(1, 4),
+                true
+            ),
+            'askedAt' => self::faker()->boolean(70) ? self::faker()->dateTimeBetween('-100 days', '-1 minute') : null,
             'votes' => rand(-20, 50),
         ];
     }
@@ -59,9 +58,7 @@ EOF
     protected function initialize(): self
     {
         // see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-        return $this
-            // ->afterInstantiate(function(Question $question): void {})
-        ;
+        return $this;
     }
 
     protected static function getClass(): string
