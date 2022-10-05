@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\QuestionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\Request;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
 class Question
@@ -27,7 +28,7 @@ class Question
     private ?\DateTimeImmutable $askedAt = null;
 
     #[ORM\Column]
-    private ?int $votes = null;
+    private int $votes = 0;
 
     public function getId(): ?int
     {
@@ -82,7 +83,7 @@ class Question
         return $this;
     }
 
-    public function getVotes(): ?int
+    public function getVotes(): int
     {
         return $this->votes;
     }
@@ -92,5 +93,23 @@ class Question
         $this->votes = $votes;
 
         return $this;
+    }
+
+    public function upVote(): self
+    {
+        $this->votes++;
+        return $this;
+    }
+
+    public function downVote(): self
+    {
+        $this->votes--;
+        return $this;
+    }
+
+    public function getVotesString(): string
+    {
+        $prefix = $this->getVotes() >=0 ? '+' : '-';
+        return sprintf('%s %d', $prefix, abs($this->getVotes()));
     }
 }
