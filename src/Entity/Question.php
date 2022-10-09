@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\AnswerRepository;
 use App\Repository\QuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -155,5 +156,10 @@ class Question
         }
 
         return $this;
+    }
+
+    public function getApprovedAnswers(): Collection
+    {
+        return $this->answers->matching(AnswerRepository::createApprovedCriteria());
     }
 }

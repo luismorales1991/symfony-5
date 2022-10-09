@@ -12,6 +12,10 @@ class Answer
 {
     use TimestampableEntity;
 
+    public const STATUS_NEEDS_APPROVAL = 'needs_approval';
+    public const STATUS_SPAM = 'spam';
+    public const STATUS_APPROVED = 'approved';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,7 +35,7 @@ class Answer
     private ?Question $question = null;
 
     #[ORM\Column(length: 15)]
-    private ?string $status = null;
+    private $status = self::STATUS_NEEDS_APPROVAL;
 
     public function getId(): ?int
     {
@@ -93,8 +97,17 @@ class Answer
 
     public function setStatus(string $status): self
     {
+        if (!in_array($status, [self::STATUS_NEEDS_APPROVAL, self::STATUS_SPAM, self::STATUS_APPROVED])) {
+            throw new \InvalidArgumentException(sprintf('Invalid status "%s"', $status));
+        }
+
         $this->status = $status;
 
         return $this;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === self::STATUS_APPROVED;
     }
 }
