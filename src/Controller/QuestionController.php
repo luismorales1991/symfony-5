@@ -50,8 +50,7 @@ class QuestionController extends AbstractController
         $answers = $question->getAnswers();
 
         return $this->render('question/show.html.twig', [
-            'question' => $question,
-            'answers' => $answers,
+            'question' => $question
         ]);
     }
 

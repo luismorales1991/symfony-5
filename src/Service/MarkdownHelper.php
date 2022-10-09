@@ -8,9 +8,7 @@ use Psr\Log\LoggerInterface;
 class MarkdownHelper
 {
     private $markdownParser;
-    private $cache;
     private $isDebug;
-    private $logger;
     
     public function __construct(MarkdownParserInterface $markdownParser, CacheInterface $cache, bool $isDebug, LoggerInterface $mdLogger)
     {
@@ -22,10 +20,6 @@ class MarkdownHelper
 
     public function parse(string $source): string
     {
-        if (stripos($source, 'cat') !== false) {
-            $this->logger->info('Meow!');
-        }
-
         if ($this->isDebug) {
             return $this->markdownParser->transformMarkdown($source);
         }
