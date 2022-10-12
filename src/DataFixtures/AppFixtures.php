@@ -44,7 +44,11 @@ class AppFixtures extends Fixture
             ];
         })->needsApproval()->many(20)->create();
 
-        UserFactory::createOne(['email' => 'abraca_admin@example.com']);
+        UserFactory::createOne([
+            'email' => 'abraca_admin@example.com',
+            'firstName' => "Kim Jong Un",
+            'plainPassword' => 'tada',
+        ]);
         UserFactory::createMany(10);
         $manager->flush();
     }
