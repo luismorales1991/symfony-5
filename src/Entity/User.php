@@ -3,31 +3,47 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups("user:read")]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups("user:read")]
     private ?string $email = null;
 
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups("user:read")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     private $plainPassword;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Question::class)]
+    private Collection $questions;
+
+    public function __construct()
+    {
+        $this->questions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -126,5 +142,49 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->plainPassword = $plainPassword;
 
         return $this;
+    }
+
+    public function getAvatarUri(int $size = 32): string
+    {
+        return 'https://ui-avatars.com/api/?' . http_build_query([
+            'name' => $this->getFirstName() ?: $this->getEmail(),
+            'size' => $size,
+            'background' => 'random',
+        ]);
+    }
+
+    /**
+     * @return Collection<int, Question>
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): self
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions->add($question);
+            $question->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): self
+    {
+        if ($this->questions->removeElement($question)) {
+            // set the owning side to null (unless already changed)
+            if ($question->getOwner() === $this) {
+                $question->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->getFirstName() ?: $this->getEmail();
     }
 }

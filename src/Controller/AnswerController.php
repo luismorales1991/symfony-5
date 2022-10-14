@@ -9,14 +9,21 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class AnswerController extends AbstractController
 {
     #[Route("/answers/{id}/vote", methods:"POST", name:"answer_vote")]
+    #[IsGranted("IS_AUTHENTICATED_REMEMBERED")]
     public function answerVote(Answer $answer, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager)
     {
         $data = json_decode($request->getContent(), true);
+        
         $direction = $data['direction'] ?? 'up';
+        $logger->info('{user} is voting on answer {answer}!', [
+            'user' => $this->getUser()->getUserIdentifier(),
+            'answer' => $answer->getId(),
+        ]);
 
         // use real logic here to save this to the database
         if ($direction === 'up') {

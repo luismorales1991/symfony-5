@@ -43,6 +43,10 @@ class Question
     #[ORM\OneToMany(mappedBy: 'question', targetEntity: QuestionTag::class)]
     private Collection $questionTags;
 
+    #[ORM\ManyToOne(inversedBy: 'questions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
 
     public function __construct()
     {
@@ -194,6 +198,18 @@ class Question
                 $questionTag->setQuestion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }
