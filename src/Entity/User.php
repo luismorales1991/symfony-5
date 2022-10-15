@@ -10,10 +10,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -35,10 +37,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    private $plainPassword;
+    private $plainPassword = false;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Question::class)]
     private Collection $questions;
+
+    #[ORM\Column]
+    private ?bool $isVerified = null;
+
+    #[ORM\Column(type:"string", length:255, nullable:true)]
+    private $totpSecret;
 
     public function __construct()
     {
@@ -186,5 +194,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getDisplayName(): string
     {
         return $this->getFirstName() ?: $this->getEmail();
+    }
+
+    public function isIsVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function isTotpAuthenticationEnabled(): bool
+    {
+        return $this->totpSecret ? true : false;
+    }
+    public function getTotpAuthenticationUsername(): string
+    {
+        return $this->getUserIdentifier();
+    }
+    public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
+    {
+        return new TotpConfiguration($this->totpSecret, TotpConfiguration::ALGORITHM_SHA1, 30, 6);
+    }
+
+    public function getTotpSecret(): ?string
+    {
+        return $this->totpSecret;
+    }
+    public function setTotpSecret(?string $totpSecret): self
+    {
+        $this->totpSecret = $totpSecret;
+        return $this;
     }
 }

@@ -18,6 +18,10 @@ security:
             security: false
         main:
             #entry_point: App\Security\LoginFormAuthenticator
+            two_factor:
+                auth_form_path: 2fa_login
+                check_path: 2fa_login_check
+            login_throttling: true
             lazy: true
             switch_user: true
             logout: true
@@ -42,8 +46,12 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/logout, role: PUBLIC_ACCESS }
+        # This ensures that the form can only be accessed when two-factor authentication is in progress.
+        - { path: ^/2fa, role: IS_AUTHENTICATED_2FA_IN_PROGRESS }
+        - { path: ^/admin/login, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:

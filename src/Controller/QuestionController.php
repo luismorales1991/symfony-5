@@ -78,12 +78,11 @@ class QuestionController extends AbstractController
             'slug' => $question->getSlug()
         ]);
     }
-
     
     #[Route("/questions/edit/{slug}", name:"app_question_edit")]
     public function edit(Question $question)
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        $this->denyAccessUnlessGranted('EDIT',$question);
         if ($question->getOwner() !== $this->getUser()) {
             throw $this->createAccessDeniedException('You are not the owner!');
         }
