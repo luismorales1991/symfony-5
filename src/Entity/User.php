@@ -5,12 +5,14 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -27,7 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[Groups("user:read")]
     private ?string $email = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type:Types::JSON)]
     private array $roles = [];
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -47,6 +49,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\Column(type:"string", length:255, nullable:true)]
     private $totpSecret;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatar = null;
 
     public function __construct()
     {
@@ -154,11 +159,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function getAvatarUri(int $size = 32): string
     {
-        return 'https://ui-avatars.com/api/?' . http_build_query([
-            'name' => $this->getFirstName() ?: $this->getEmail(),
-            'size' => $size,
-            'background' => 'random',
-        ]);
+        if (!$this->avatar) {
+            return 'https://ui-avatars.com/api/?' . http_build_query([
+                'name' => $this->getFirstName() ?: $this->getEmail(),
+                'size' => $size,
+                'background' => 'random',
+            ]);
+        }
+        if (strpos($this->avatar, '/') !== false) {
+            return $this->avatar;
+        }
+        return sprintf('/uploads/avatars/%s', $this->avatar);
     }
 
     /**
@@ -228,6 +239,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setTotpSecret(?string $totpSecret): self
     {
         $this->totpSecret = $totpSecret;
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): self
+    {
+        $this->avatar = $avatar;
+
         return $this;
     }
 }
