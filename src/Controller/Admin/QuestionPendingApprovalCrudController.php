@@ -27,6 +27,7 @@ class QuestionPendingApprovalCrudController extends QuestionCrudController
             ->setPageTitle(Crud::PAGE_DETAIL, static function (Question $question) {
                 return sprintf('#%s %s', $question->getId(), $question->getName());
             })
-            ->setHelp(Crud::PAGE_INDEX, 'Questions are not published to users until approved by a moderator');
+            ->setHelp(Crud::PAGE_INDEX, 'Questions are not published to users until approved by a moderator')
+            ->showEntityActionsInlined();
     }
 }

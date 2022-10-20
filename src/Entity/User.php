@@ -53,9 +53,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
 
+    #[ORM\OneToMany(mappedBy: 'updatedBy', targetEntity: Question::class)]
+    private Collection $updatedQuestion;
+
     public function __construct()
     {
-        $this->questions = new ArrayCollection();
+        $this->updatedQuestion = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -255,6 +258,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Question>
+     */
+    public function getUpdatedQuestion(): Collection
+    {
+        return $this->updatedQuestion;
+    }
+
+    public function addUpdatedQuestion(Question $updatedQuestion): self
+    {
+        if (!$this->updatedQuestion->contains($updatedQuestion)) {
+            $this->updatedQuestion->add($updatedQuestion);
+            $updatedQuestion->setUpdatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUpdatedQuestion(Question $updatedQuestion): self
+    {
+        if ($this->updatedQuestion->removeElement($updatedQuestion)) {
+            // set the owning side to null (unless already changed)
+            if ($updatedQuestion->getUpdatedBy() === $this) {
+                $updatedQuestion->setUpdatedBy(null);
+            }
+        }
 
         return $this;
     }

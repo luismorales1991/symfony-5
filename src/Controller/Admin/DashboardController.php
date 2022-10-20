@@ -74,14 +74,22 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToUrl('Home', 'fas fa-home', $this->generateUrl("app_homepage"));
         yield MenuItem::linkToDashboard('Dashboard', 'fas fa-tachometer-alt');
-        yield MenuItem::linkToCrud('Questions', 'fas fa-question-circle', Question::class)
-                            ->setPermission('ROLE_MODERATOR');
+        yield MenuItem::section('Content');
+        yield MenuItem::subMenu('Questions', 'fa fa-question-circle')
+            ->setSubItems([
+                MenuItem::linkToCrud('All', 'fa fa-list', Question::class)
+                    ->setController(QuestionCrudController::class)
+                    ->setPermission('ROLE_MODERATOR'),
+                MenuItem::linkToCrud('Pending Verification', 'fa fa-warning', Question::class)
+                    ->setPermission('ROLE_MODERATOR')
+                    ->setController(QuestionPendingApprovalCrudController::class),
+            ]);
         yield MenuItem::linkToCrud('Answers', 'fas fa-comments', Answer::class);
         yield MenuItem::linkToCrud('Tags', 'fas fa-folder', Tag::class);
+        yield MenuItem::section("mamadas.com");
+        yield MenuItem::linkToUrl('StackOverflow', 'fab fa-stack-overflow', 'https://stackoverflow.com')
+            ->setLinkTarget('_blank');
         yield MenuItem::linkToCrud('Users', 'fas fa-users', User::class);
-        yield MenuItem::linkToCrud('Pending Approval', 'far fa-question-circle', Question::class)
-            ->setPermission('ROLE_MODERATOR')
-            ->setController(QuestionPendingApprovalCrudController::class);
     }
 
     public function configureActions(): Actions

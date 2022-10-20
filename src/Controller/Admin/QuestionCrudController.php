@@ -4,12 +4,14 @@ namespace App\Controller\Admin;
 
 use App\EasyAdmin\VotesField;
 use App\Entity\Question;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
@@ -34,12 +36,43 @@ class QuestionCrudController extends AbstractCrudController
     }
 
     public function configureActions(Actions $actions): Actions
-    {
+    {   
+        $viewAction = Action::new('view')
+            ->linkToUrl(function(Question $question) {
+                return $this->generateUrl('app_question_show', [
+                    'slug' => $question->getSlug(),
+                ]);
+            })
+            ->addCssClass('btn btn-success')
+            ->setIcon('fa fa-eye')
+            ->setLabel('View on site');;
         return parent::configureActions($actions)
+            // ERROR: Call to a member function getBaseUrl() on null;
+          /* ->update(Crud::PAGE_INDEX, Action::DELETE, static function(Action $action) {
+                $action->displayIf(static function (Question $question) {
+                    return !$question->isIsVerified();
+                });
+            }) */
             ->setPermission(Action::INDEX, 'ROLE_MODERATOR')
             ->setPermission(Action::NEW, 'ROLE_SUPER_ADMIN')
             ->setPermission(Action::DELETE, 'ROLE_SUPER_ADMIN')
-            ->setPermission(Action::BATCH_DELETE, 'ROLE_SUPER_ADMIN');
+            ->setPermission(Action::BATCH_DELETE, 'ROLE_SUPER_ADMIN')
+            ->add(Crud::PAGE_DETAIL, $viewAction)
+            ->add(Crud::PAGE_INDEX, $viewAction);
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        if ($entityInstance->getIsApproved()) {
+            throw new \Exception('Deleting approved questions is forbidden!');
+        }
+        parent::deleteEntity($entityManager, $entityInstance);
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return parent::configureCrud($crud)
+            ->showEntityActionsInlined();
     }
 
     public function configureFields(string $pageName): iterable
@@ -73,6 +106,9 @@ class QuestionCrudController extends AbstractCrudController
             AssociationField::new('answers')
                 ->autocomplete()
                 ->setFormTypeOption('by_reference', false),
+            AssociationField::new('updatedBy')
+                ->onlyOnDetail(),
+            BooleanField::new("isVerified")->renderAsSwitch(false)
         ];
     }
 }

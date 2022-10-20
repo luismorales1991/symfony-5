@@ -47,6 +47,11 @@ class Question
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
+    #[ORM\ManyToOne(inversedBy: 'updatedQuestion')]
+    private ?User $updatedBy = null;
+
+    #[ORM\Column]
+    private ?bool $isVerified = null;
 
     public function __construct()
     {
@@ -217,5 +222,29 @@ class Question
     public function __toString()
     {
         return $this->name;
+    }
+
+    public function getUpdatedBy(): ?User
+    {
+        return $this->updatedBy;
+    }
+
+    public function setUpdatedBy(?User $updatedBy): self
+    {
+        $this->updatedBy = $updatedBy;
+
+        return $this;
+    }
+
+    public function isIsVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
     }
 }

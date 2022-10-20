@@ -65,8 +65,7 @@ class UserCrudController extends AbstractCrudController
                 ->renderExpanded()
                 ->renderAsBadges(),
             BooleanField::new('is_verified')
-                ->renderAsSwitch(false),
-            AvatarField::new('avatar')
+                ->renderAsSwitch(false)
         ];
     }
 }
