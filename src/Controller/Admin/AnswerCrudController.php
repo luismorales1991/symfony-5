@@ -7,9 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use App\EasyAdmin\VotesField;
 
 class AnswerCrudController extends AbstractCrudController
@@ -27,7 +25,8 @@ class AnswerCrudController extends AbstractCrudController
             TextareaField::new('content'),
             VotesField::new('votes', 'Total Votes'),
             AssociationField::new('question')
-                ->hideOnIndex(),
+                ->autocomplete()
+                ->setCrudController(QuestionCrudController::class),
             Field::new("username")
                 ->hideOnForm(),
             Field::new('createdAt')

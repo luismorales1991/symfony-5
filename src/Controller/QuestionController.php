@@ -41,14 +41,14 @@ class QuestionController extends AbstractController
 
     
     #[Route("/questions/new")]
-    public function new(EntityManagerInterface $entityManager)
+    public function new()
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         return new Response('Sounds like a GREAT feature for V2!');
     }
 
     #[Route("/questions/{slug}", name:"app_question_show")]
-    public function show(Question $question, AnswerRepository $answerRepository)
+    public function show(Question $question)
     {
         if ($this->isDebug) {
             $this->logger->info('We are in debug mode!');

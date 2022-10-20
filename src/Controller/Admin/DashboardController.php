@@ -79,6 +79,9 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Answers', 'fas fa-comments', Answer::class);
         yield MenuItem::linkToCrud('Tags', 'fas fa-folder', Tag::class);
         yield MenuItem::linkToCrud('Users', 'fas fa-users', User::class);
+        yield MenuItem::linkToCrud('Pending Approval', 'far fa-question-circle', Question::class)
+            ->setPermission('ROLE_MODERATOR')
+            ->setController(QuestionPendingApprovalCrudController::class);
     }
 
     public function configureActions(): Actions

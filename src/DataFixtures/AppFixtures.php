@@ -20,15 +20,25 @@ class AppFixtures extends Fixture
             'firstName' => "Kim Jong Un",
             'roles' => ['ROLE_ADMIN'],
             'plainPassword' => 'tada',
+            'isVerified' => true
         ]);
 
         UserFactory::createOne([
             'email' => 'moderator@example.com',
             'firstName' => "El Moderador",
-            'roles' => ['ROLE_MODERATOR'],
+            'roles' => ['ROLE_MODERATOR','ROLE_ADMIN'],
             'plainPassword' => 'tada',
+            'isVerified' => true
         ]);
         
+        UserFactory::createOne([
+            'email' => 'superadmin@example.com',
+            'firstName' => "Super Admin",
+            'roles' => ['ROLE_SUPER_ADMIN','ROLE_ADMIN'],
+            'plainPassword' => 'tada',
+            'isVerified' => true
+        ]);
+
         UserFactory::createMany(10);
         TagFactory::createMany(100);
         
