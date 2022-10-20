@@ -6,6 +6,9 @@
 parameters:
 
 services:
+    App\EasyAdmin\TruncateLongTextConfigurator:
+        tags:
+            - { name: 'ea.field_configurator', priority: -1 }
     Psr\Log\LoggerInterface $mdLogger: '@monolog.logger.markdown'
     # default configuration for services in *this* file
     _defaults:

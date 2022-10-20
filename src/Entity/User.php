@@ -207,6 +207,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->getFirstName() ?: $this->getEmail();
     }
 
+    public function __toString(): string
+    {
+        return $this->getDisplayName();
+    }
+
     public function isIsVerified(): ?bool
     {
         return $this->isVerified;

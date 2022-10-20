@@ -23,7 +23,10 @@ class AppFixtures extends Fixture
         ]);
 
         UserFactory::createOne([
-            'email' => 'abraca_user@example.com',
+            'email' => 'moderator@example.com',
+            'firstName' => "El Moderador",
+            'roles' => ['ROLE_MODERATOR'],
+            'plainPassword' => 'tada',
         ]);
         
         UserFactory::createMany(10);

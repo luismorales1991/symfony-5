@@ -6,12 +6,15 @@
   "dependencies": {
     "axios": "^1.0.0",
     "bootstrap": "^5.2.1",
-    "jquery": "^3.6.1"
+    "jquery": "^3.6.1",
+    "snarkdown": "^2.0.0"
   },
   "devDependencies": {
-    "@hotwired/stimulus": "^3.1.0",
+    "@hotwired/stimulus": "^3.0.0",
     "@symfony/stimulus-bridge": "^3.2.1",
+    "@symfony/ux-chartjs": "file:vendor/symfony/ux-chartjs/Resources/assets",
     "@symfony/webpack-encore": "^4.0.0",
+    "chart.js": "^3.4.1",
     "core-js": "^3.25.3",
     "regenerator-runtime": "^0.13.9",
     "webpack-notifier": "^1.15.0"

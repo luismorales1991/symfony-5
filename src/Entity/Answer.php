@@ -31,7 +31,7 @@ class Answer
     private ?int $votes = 0;
 
     #[ORM\ManyToOne(inversedBy: 'answers')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Question $question = null;
 
     #[ORM\Column(length: 15)]
@@ -117,5 +117,10 @@ class Answer
     public function isApproved(): bool
     {
         return $this->status === self::STATUS_APPROVED;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getId();
     }
 }
