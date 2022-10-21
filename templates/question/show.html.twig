@@ -34,6 +34,20 @@
                         <div class="col">
                             <div class="d-flex justify-content-between">
                                 <h1 class="q-title-show">{{ question.name }}</h1>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a class="text-white" href="{{ ea_url()
+                                    .setController('App\\Controller\\Admin\\QuestionCrudController')
+                                    .setAction('edit')
+                                    .setEntityId(question.id)
+                                }}">
+                                        <span class="fa fa-edit"></span>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-between">
+                                <h1 class="q-title-show">{{ question.name }}</h1>
                                 {% if is_granted('EDIT', question) %}
                                     <a href="{{ path('app_question_edit', {
                                         slug: question.slug

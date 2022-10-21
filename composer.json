@@ -13,6 +13,7 @@
         "doctrine/orm": "^2.13",
         "easycorp/easyadmin-bundle": "^4.4",
         "endroid/qr-code": "^4.6",
+        "handcraftedinthealps/goodby-csv": "^1.4",
         "knplabs/knp-markdown-bundle": "^1.10",
         "knplabs/knp-time-bundle": "^1.19",
         "pagerfanta/doctrine-orm-adapter": "^3.6",

@@ -16,18 +16,18 @@ class QuestionPendingApprovalCrudController extends QuestionCrudController
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         return parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters)
-            ->andWhere('entity.votes > :numbah')
+            ->andWhere('entity.isVerified = :numbah')
             ->setParameter('numbah', 0);
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->setPageTitle(Crud::PAGE_INDEX, 'Questions pending approval')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Questions pending verification')
             ->setPageTitle(Crud::PAGE_DETAIL, static function (Question $question) {
                 return sprintf('#%s %s', $question->getId(), $question->getName());
             })
-            ->setHelp(Crud::PAGE_INDEX, 'Questions are not published to users until approved by a moderator')
+            ->setHelp(Crud::PAGE_INDEX, 'Questions are not published to users until verification by a moderator')
             ->showEntityActionsInlined();
     }
 }
